@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-depl
+spec:
+  replicas: 1
+  # one pod in this cluster
+  selector:
+    matchLabels:
+      app: orders
+  template:
+    metadata:
+      labels:
+        app: orders
+    spec:
+      containers:
+        #one container in this pod
+        - name: orders
+          image: requiemleaf/orders
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  #get the pod name as the environmental virable value
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: ticketing
+            - name: MONGO_URI
+              value: 'mongodb://orders-mongo-srv:27017/orders'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            # key is what is used to validate a JWT
+            # set a secret as a environmental variable in a specific container
+            # can save multiple key-value pairs in the secret
+            # the secret used here was created by command kubectl create secret generic jwt-secret --from-literal=JWT_KEY=placeholder in kubernette cluster
+---
+# cluster IP-service to allow services inside the cluster to access this pod
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-srv
+spec:
+  selector:
+    #to find the pods that it is supposed to govern request to
+    app: orders
+  ports:
+    #specify the list of ports that we want to allow access to
+    - name: orders
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+      #Next.js by default listens on 3000

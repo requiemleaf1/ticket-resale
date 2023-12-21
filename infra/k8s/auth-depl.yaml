@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-depl
+spec:
+  replicas: 1
+  # one pod in this cluster
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        #one container in this pod
+        - name: auth
+          #dockerID
+          image: requiemleaf/auth
+          env:
+            - name: MONGO_URI
+              value: 'mongodb://auth-mongo-srv:27017/auth'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            # key is what used to validate a JWT
+            # set a secret as a environmental variable in a specific container
+            # can save multiple key-value pairs in the secret
+            # the secret used here was created by command kubectl create secret generic jwt-secret --from-literal=JWT_KEY=placeholder in kubernette cluster
+---
+#service used to access the cubectl pod
+# cluster IP-service to allow services inside the cluster to access this pod
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv
+spec:
+  selector:
+    #to find the pods that it is supposed to govern request to
+    app: auth
+  ports:
+    #specify the list of ports that we want to allow access to
+    - name: auth
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+      #Next.js by default listens on 3000
