@@ -7,7 +7,8 @@ import { TicketUpdatedListener } from './events/listeners/ticket-updated-listene
 import { ExpirationCompleteListener} from "./events/listeners/expiration-complete-listener";
 
 const start = async () => {
-  console.log("Starting...");
+
+  console.log("dwdf");
   if (!process.env.JWT_KEY) {// add the check when start to deploy the code to see if the environmental variable is definded in depl.yaml
     throw new Error('JWT_KEY must be defined');
   }
