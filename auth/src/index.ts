@@ -3,7 +3,7 @@ import mongoose from "mongoose"; // mongoose is the js lib used to get access to
 import { app } from "./app";
 const start = async () => {
 
-  console.log("Starting up....");
+  console.log("Starting up...");
 
   if (!process.env.JWT_KEY) {// add the check when start to deploy the code to see if the environmental variable is definded in depl.yaml
     throw new Error('JWT_KEY must be defined');
