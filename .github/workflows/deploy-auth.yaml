@@ -1,4 +1,4 @@
-name: deploy-auth
+name: deploy_auth
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - "auth/**"
-  workflow_dispatch:     
+  workflow_dispatch:  # Corrected key for manual trigger
 
 jobs:
   build:
@@ -14,20 +14,22 @@ jobs:
     environment: DEVELOPMENT
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Build Docker Image
-        run: | 
+        run: |
           cd auth && docker build -t requiemleaf/auth .
-        
+
       - name: Login to DockerHub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-        
+
       - name: Push Docker Image
         run: docker push requiemleaf/auth
+
       - uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
       - run: doctl kubernetes cluster kubeconfig save ticket-resale
+
       - run: kubectl rollout restart deployment auth-depl
 
-      
