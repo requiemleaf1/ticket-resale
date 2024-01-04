@@ -1,30 +1,53 @@
-// only contains startup code to start the express app on a specific port
-import mongoose from "mongoose"; // mongoose is the js lib used to get access to mongoDB
-import { app } from "./app";
+import express from 'express';
+import 'express-async-errors';
+import { json } from 'body-parser';
+import mongoose from 'mongoose';
+import cookieSession from 'cookie-session';
+
+import { currentUserRouter } from './routes/current-user';
+import { signinRouter } from './routes/signin';
+import { signoutRouter } from './routes/signout';
+import { signupRouter } from './routes/signup';
+import { errorHandler } from './middlewares/error-handler';
+import { NotFoundError } from './errors/not-found-error';
+
+const app = express();
+app.set('trust proxy', true);
+app.use(json());
+app.use(
+  cookieSession({
+    signed: false,
+    secure: true,
+  })
+);
+
+app.use(currentUserRouter);
+app.use(signinRouter);
+app.use(signoutRouter);
+app.use(signupRouter);
+
+app.all('*', async (req, res) => {
+  throw new NotFoundError();
+});
+
+app.use(errorHandler);
+
 const start = async () => {
-
-  console.log("Starting up...");
-
-  if (!process.env.JWT_KEY) {// add the check when start to deploy the code to see if the environmental variable is definded in depl.yaml
+  if (!process.env.JWT_KEY) {
     throw new Error('JWT_KEY must be defined');
   }
-  if (!process.env.MONGO_URI) {// add the check when start to deploy the code to see if the environmental variable is definded in depl.yaml
-    throw new Error(' MONGO_URI must be defined');
-  }  
+
   try {
-      await mongoose.connect(process.env.MONGO_URI//domain came from the service name and port in mongo-depl file
-        //useNewUrlParser: true,
-        //useUnifiedTopology: true,
-        //useCreateIndex: true,
-      );  
-      console.log('Connected to MongoDb');//"auth" is the name given to the database for specific application. mongoDB will create the database for us
+    await mongoose.connect('mongodb://auth-mongo-srv:27017/auth');
+
+    console.log('Connected to MongoDb');
   } catch (err) {
-    console.error(err);//wrap the function in try and catch to make sure if there is an error, the error will be logout and
+    console.error(err);
   }
 
   app.listen(3000, () => {
-    console.log("Listening on port 3000!!!!!!!!");
-  });  
+    console.log('Listening on port 3000!!!!!!!!');
+  });
 };
 
-start();// run start() defined above
+start();

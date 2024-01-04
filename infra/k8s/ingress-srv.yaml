@@ -11,41 +11,35 @@ spec:
       http:
         paths:
           - path: /api/payments/?(.*)
-            #route requests to particular path to specific service
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
-                name: payment-srv
+                name: payments-srv
                 port:
                   number: 3000
           - path: /api/users/?(.*)
-            #route requests to particular path to specific service
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: auth-srv
                 port:
                   number: 3000
           - path: /api/tickets/?(.*)
-            #route requests to particular path to specific service
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: tickets-srv
                 port:
                   number: 3000
           - path: /api/orders/?(.*)
-            #route requests to particular path to specific service
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: orders-srv
                 port:
                   number: 3000
           - path: /?(.*)
-            #route requests to particular path to specific service.
-            #routes are matched in order, client should be listed at the end because it catches all the requests that are not matched by the services above
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: client-srv
