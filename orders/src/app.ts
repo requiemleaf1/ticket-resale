@@ -16,7 +16,7 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,//disable encryption on this cookie. JSON web token itself is already encrypted
-    secure: process.env.NODE_ENV !== 'test'// cookies will only be used if a user is visiting our application over an HTTPS connection if set to true
+    secure: false// cookies will only be used if a user is visiting our application over an HTTPS connection if set to true
   })// this means if NODE_ENV node environmental variable in the NodeJs environmental variable set is "test", the connection doesn't need to be secure
 );//when Jest run tests at the terminal NODE_ENV is set to "test"
 app.use(currentUser);
