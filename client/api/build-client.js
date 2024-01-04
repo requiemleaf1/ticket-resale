@@ -9,7 +9,7 @@ export default ({ req }) => {
 
     return axios.create({//return a pre-configured axios instance with the specific property
       baseURL:
-        'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local',// if we are on server, it is running in the container, so the localhost location is different than the local mechine.we need to manualy refer to the ingress -srv to append domain to the url
+        'www.ticket-resale2024.college',// if we are on server, it is running in the container, so the localhost location is different than the local mechine.we need to manualy refer to the ingress -srv to append domain to the url
       headers: req.headers,
     });
   } else {
