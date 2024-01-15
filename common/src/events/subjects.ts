@@ -4,6 +4,7 @@ export enum Subjects {// all the channels to be used
 
   OrderCreated = 'order:created',
   OrderCancelled = 'order:cancelled',
+  OrderPaid = "order:paid",
 
   ExpirationComplete = "expiration:complete",
 
