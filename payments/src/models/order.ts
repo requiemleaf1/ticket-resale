@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 import { OrderStatus } from '@requiemleaftickets/common';
+import { TicketDoc} from "../../../orders/src/models/ticket";
 
 interface OrderAttrs {
   id: string;
@@ -8,6 +9,7 @@ interface OrderAttrs {
   userId: string;
   price: number;
   status: OrderStatus;
+  ticket: TicketDoc;
 }
 
 interface OrderDoc extends mongoose.Document {
@@ -15,6 +17,7 @@ interface OrderDoc extends mongoose.Document {
   userId: string;
   price: number;
   status: OrderStatus;
+  ticket: TicketDoc;
 }
 
 interface OrderModel extends mongoose.Model<OrderDoc> {
@@ -34,6 +37,10 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
+    },
+    ticket: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Ticket',
     },
   },
   {

@@ -1,5 +1,5 @@
 import { Subjects, Publisher, OrderPaidEvent } from '@requiemleaftickets/common';
 
-export class PaymentPaidPublisher extends Publisher<PaymentPaidEvent> {
-  subject: Subjects.OrderPaid = Subjects.PaymentPaid;
+export class OrderPaidPublisher extends Publisher<OrderPaidEvent> {
+  subject: Subjects.OrderPaid = Subjects.OrderPaid;
 }

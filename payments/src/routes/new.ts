@@ -12,6 +12,7 @@ import { stripe} from "../stripe";
 import { Order } from '../models/order';
 import { Payment} from "../models/payment";
 import { PaymentCreatedPublisher } from '../events/publishers/payment-created-publisher';
+import { OrderPaidPublisher} from "../events/publishers/order-paid-publisher";
 import {natsWrapper} from"../nats-wrapper";
 
 
@@ -25,7 +26,7 @@ router.post(
   async (req: Request, res: Response) => {
     const { token, orderId } = req.body;
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate('ticket');
 
     if (!order) {
       throw new NotFoundError();
@@ -46,12 +47,21 @@ router.post(
       orderId,
       stripeId: charge.id,
     });
+    order.status = OrderStatus.Complete;
     await payment.save();
+    await order.save;
     new PaymentCreatedPublisher(natsWrapper.client).publish({
       id: payment.id,// every mongoDB document has an id(converted from id)
       orderId: payment.orderId,
       stripeId: payment.stripeId,
     });
+    new OrderPaidPublisher(natsWrapper.client).publish({
+      id: orderId,
+      version: order.version,
+      ticket: {
+        id: order.ticket.id,
+      }
+    })
     console.log("order paid");
     res.status(201).send({ id: payment.id});
   }
