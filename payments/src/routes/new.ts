@@ -52,7 +52,7 @@ router.post(
       orderId: payment.orderId,
       stripeId: payment.stripeId,
     });
-
+    console.log("order paid");
     res.status(201).send({ id: payment.id});
   }
 );
