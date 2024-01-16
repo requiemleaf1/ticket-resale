@@ -7,14 +7,16 @@ import {
 import { Message } from 'node-nats-streaming';
 import { queueGroupName } from './queue-group-name';
 import { Order } from '../../models/order';
-import { OrderCancelledPublisher } from '../publishers/order-cancelled-publisher';
 
-export class ExpirationCompleteListener extends Listener<OrderPaidEvent> {
+export class OrderPaidListener extends Listener<OrderPaidEvent> {
   queueGroupName = queueGroupName;
   subject: Subjects.OrderPaid = Subjects.OrderPaid;
 
   async onMessage(data: OrderPaidEvent['data'], msg: Message) {
-    const order = await Order.findById(data.id).populate('ticket');
+    const order = await Order.findOne({
+      _id: data.id,
+    version: data.version - 1,
+  });
 
     if (!order) {
       throw new Error('Order not found');
