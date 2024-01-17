@@ -8,6 +8,7 @@ interface OrderAttrs {
   userId: string;
   price: number;
   status: OrderStatus;
+  ticketId: string;
 }
 
 interface OrderDoc extends mongoose.Document {
@@ -15,6 +16,7 @@ interface OrderDoc extends mongoose.Document {
   userId: string;
   price: number;
   status: OrderStatus;
+  ticketId: string;
 }
 
 interface OrderModel extends mongoose.Model<OrderDoc> {
@@ -35,6 +37,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    ticketId:{
+      type: String,
+      required: true,
+    }
   },
   {
     toJSON: {
@@ -56,6 +62,7 @@ orderSchema.statics.build = (attrs: OrderAttrs) => {
     price: attrs.price,
     userId: attrs.userId,
     status: attrs.status,
+    ticketId: attrs.ticketId
   });
 };
 

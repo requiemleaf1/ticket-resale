@@ -12,6 +12,7 @@ import { stripe} from "../stripe";
 import { Order } from '../models/order';
 import { Payment} from "../models/payment";
 import { PaymentCreatedPublisher } from '../events/publishers/payment-created-publisher';
+//import { OrderPaidPublisher} from "../events/publishers/order-paid-publisher";
 import {natsWrapper} from"../nats-wrapper";
 
 
@@ -34,7 +35,10 @@ router.post(
       throw new NotAuthorizedError();
     }
     if (order.status === OrderStatus.Cancelled) {
-      throw new BadRequestError('Cannot pay for an cancelled order');
+      throw new BadRequestError('Cannot pay for a cancelled order');
+    }
+    if (order.status === OrderStatus.Complete) {
+      throw new BadRequestError('Cannot pay for a complete order');
     }
     
     const charge = await stripe.charges.create({// stripe creates a charhe object to fulfill the payment
@@ -46,13 +50,25 @@ router.post(
       orderId,
       stripeId: charge.id,
     });
+    order.status = OrderStatus.Complete;
     await payment.save();
-    new PaymentCreatedPublisher(natsWrapper.client).publish({
-      id: payment.id,// every mongoDB document has an id(converted from id)
-      orderId: payment.orderId,
-      stripeId: payment.stripeId,
-    });
-
+    await order.save();
+    try {
+      await new PaymentCreatedPublisher(natsWrapper.client).publish({
+        id: payment.id,
+        orderId: payment.orderId,
+        stripeId: payment.stripeId,
+      });
+      //await new OrderPaidPublisher(natsWrapper.client).publish({
+      //  id: orderId,
+      //  version: order.version,
+      //  ticketId: order.ticketId
+      //});
+      //console.log("Event published");
+    } catch (err) {
+      console.error("Error publishing event", err);
+    }
+    //console.log("order paid");
     res.status(201).send({ id: payment.id});
   }
 );

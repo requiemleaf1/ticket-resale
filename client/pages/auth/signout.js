@@ -12,7 +12,7 @@ export default () => {
 
   useEffect(() => {
     doRequest();
-  }, []);// means run doRequest() one time
+  }, []);
 
-  return <div>Signing you out...</div>;// shows when this component is displayed, which only shows for 0.2s
+  return <div>Signing you out...</div>;
 };

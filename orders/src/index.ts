@@ -5,6 +5,8 @@ import { natsWrapper } from './nats-wrapper';
 import { TicketCreatedListener } from './events/listeners/ticket-created-listener';
 import { TicketUpdatedListener } from './events/listeners/ticket-updated-listener';
 import { ExpirationCompleteListener} from "./events/listeners/expiration-complete-listener";
+//import { OrderPaidListener } from "./events/listeners/order-paid-listener";
+import { PaymentCreatedListener } from "./events/listeners/payment-created-listener";
 
 const start = async () => {
   console.log("dwdf");
@@ -40,6 +42,8 @@ const start = async () => {
     new TicketCreatedListener(natsWrapper.client).listen();//start one listener
     new TicketUpdatedListener(natsWrapper.client).listen();//start one listener
     new ExpirationCompleteListener(natsWrapper.client).listen();
+    new PaymentCreatedListener(natsWrapper.client).listen();
+    //new OrderPaidListener(natsWrapper.client).listen();
 
     await mongoose.connect(process.env.MONGO_URI);//domain came from the service name and port in mongo-depl file
     console.log('Connected to MongoDb');//"auth" is the name given to the database for specific application. mongoDB will create the database for us
