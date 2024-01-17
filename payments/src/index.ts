@@ -3,7 +3,6 @@ import mongoose from "mongoose"; // mongoose is the js lib used to get access to
 import { app } from "./app";
 import { natsWrapper } from './nats-wrapper';
 import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
-import { OrderCreatedEvent } from "@requiemleaftickets/common";
 import { OrderCreatedListener } from "./events/listeners/order-created-listener";
 
 const start = async () => {

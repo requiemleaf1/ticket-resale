@@ -19,6 +19,7 @@ const nats_wrapper_1 = require("./nats-wrapper");
 const ticket_created_listener_1 = require("./events/listeners/ticket-created-listener");
 const ticket_updated_listener_1 = require("./events/listeners/ticket-updated-listener");
 const expiration_complete_listener_1 = require("./events/listeners/expiration-complete-listener");
+const order_paid_listener_1 = require("./events/listeners/order-paid-listener");
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     console.log("dwdf");
     if (!process.env.JWT_KEY) { // add the check when start to deploy the code to see if the environmental variable is definded in depl.yaml
@@ -50,6 +51,7 @@ const start = () => __awaiter(void 0, void 0, void 0, function* () {
         new ticket_created_listener_1.TicketCreatedListener(nats_wrapper_1.natsWrapper.client).listen(); //start one listener
         new ticket_updated_listener_1.TicketUpdatedListener(nats_wrapper_1.natsWrapper.client).listen(); //start one listener
         new expiration_complete_listener_1.ExpirationCompleteListener(nats_wrapper_1.natsWrapper.client).listen();
+        new order_paid_listener_1.OrderPaidListener(nats_wrapper_1.natsWrapper.client).listen();
         yield mongoose_1.default.connect(process.env.MONGO_URI); //domain came from the service name and port in mongo-depl file
         console.log('Connected to MongoDb'); //"auth" is the name given to the database for specific application. mongoDB will create the database for us
     }

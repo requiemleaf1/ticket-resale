@@ -12,7 +12,7 @@ import { stripe} from "../stripe";
 import { Order } from '../models/order';
 import { Payment} from "../models/payment";
 import { PaymentCreatedPublisher } from '../events/publishers/payment-created-publisher';
-import { OrderPaidPublisher} from "../events/publishers/order-paid-publisher";
+//import { OrderPaidPublisher} from "../events/publishers/order-paid-publisher";
 import {natsWrapper} from"../nats-wrapper";
 
 
@@ -59,15 +59,16 @@ router.post(
         orderId: payment.orderId,
         stripeId: payment.stripeId,
       });
-      await new OrderPaidPublisher(natsWrapper.client).publish({
-        id: orderId,
-        version: order.version,
-      });
-      console.log("Event published");
+      //await new OrderPaidPublisher(natsWrapper.client).publish({
+      //  id: orderId,
+      //  version: order.version,
+      //  ticketId: order.ticketId
+      //});
+      //console.log("Event published");
     } catch (err) {
       console.error("Error publishing event", err);
     }
-    console.log("order paid");
+    //console.log("order paid");
     res.status(201).send({ id: payment.id});
   }
 );
